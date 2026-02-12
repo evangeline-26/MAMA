@@ -4,6 +4,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.getElementById('navMenu');
     const navLinks = document.querySelectorAll('.nav-link');
 
+    // Helper function to reset hamburger icon
+    function resetHamburgerIcon() {
+        const spans = navToggle.querySelectorAll('span');
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+    }
+
     // Toggle mobile menu
     navToggle.addEventListener('click', function() {
         navMenu.classList.toggle('active');
@@ -15,9 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             spans[1].style.opacity = '0';
             spans[2].style.transform = 'rotate(-45deg) translateY(-8px)';
         } else {
-            spans[0].style.transform = 'none';
-            spans[1].style.opacity = '1';
-            spans[2].style.transform = 'none';
+            resetHamburgerIcon();
         }
     });
 
@@ -25,10 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             navMenu.classList.remove('active');
-            const spans = navToggle.querySelectorAll('span');
-            spans[0].style.transform = 'none';
-            spans[1].style.opacity = '1';
-            spans[2].style.transform = 'none';
+            resetHamburgerIcon();
         });
     });
 
@@ -56,20 +59,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const sections = document.querySelectorAll('section');
         const navbarHeight = document.querySelector('.navbar').offsetHeight;
         
-        let current = '';
+        let currentSectionId = '';
         sections.forEach(section => {
             const sectionTop = section.offsetTop - navbarHeight - 100;
             const sectionHeight = section.offsetHeight;
             
             if (window.pageYOffset >= sectionTop && 
                 window.pageYOffset < sectionTop + sectionHeight) {
-                current = section.getAttribute('id');
+                currentSectionId = section.getAttribute('id');
             }
         });
 
         navLinks.forEach(link => {
             link.classList.remove('active');
-            if (link.getAttribute('href') === '#' + current) {
+            if (link.getAttribute('href') === '#' + currentSectionId) {
                 link.classList.add('active');
             }
         });
