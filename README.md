@@ -1,219 +1,142 @@
-# 💖 Valentine's Day Website 💖
+# @vitejs/plugin-react [![npm](https://img.shields.io/npm/v/@vitejs/plugin-react.svg)](https://npmjs.com/package/@vitejs/plugin-react)
 
-A beautiful, romantic Valentine's Day website built with React, featuring smooth animations, floating hearts, and an emotional journey.
+The default Vite plugin for React projects.
 
-## 🚀 Getting Started
+- enable [Fast Refresh](https://www.npmjs.com/package/react-refresh) in development (requires react >= 16.9)
+- use the [automatic JSX runtime](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
+- use custom Babel plugins/presets
+- small installation size
 
-The website is already running at: **http://localhost:5173/**
+```js
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-Simply open this URL in your browser to experience the magic!
-
-## ✨ Features
-
-### 🏠 Home Page
-
-- Beautiful romantic title: "Will you be my Valentine?"
-- Two buttons: **YES** ❤️ and **NO** 💔
-- Floating heart animations in the background
-- Smooth gradient background with pink and red tones
-
-### ✅ If You Click YES
-
-You'll see three gift options:
-
-1. **💌 Love Letter** - A heartfelt message with line-by-line animated text
-2. **🎶 Song List** - "Our Love Playlist" with 10 romantic songs
-3. **📸 Our Memories** - Photo gallery with 15 beautiful memories
-
-### ❌ If You Click NO
-
-You'll see two gifts (swapped order):
-
-1. **🎶 Song List** - Same romantic playlist
-2. **💔 Angry Love Letter** - A dramatic message with a "Change to YES" button
-
-## 🎁 Gift Details
-
-### Love Letter (YES Path)
-
-- Elegant cursive font (Dancing Script & Great Vibes)
-- Text appears line by line with smooth animation
-- Beautiful signature at the end
-- Romantic cream-colored background with gold border
-
-### Angry Letter (NO Path)
-
-- Bold typography with shaking animation
-- Dramatic message to convince you to choose YES
-- Big "Change to YES" button that redirects to YES gifts
-
-### Song List
-
-- 10 romantic Tamil songs
-- Interactive cards with hover effects
-- Heart icons and play buttons
-- Clean, modern design
-
-### Photo Gallery
-
-- 15 photos with emotional captions
-- Grid layout with hover zoom effect
-- Click any photo to open in full-screen modal
-- Heart confetti animation when viewing photos
-- Beautiful captions with emojis
-
-## 📸 Your Photos
-
-All your photos are located in `/public/photos/`:
-
-- first_birthday.jpg
-- official_home.jpg
-- saree.jpg
-- lust.jpg
-- property.jpg
-- sacrifices.jpg
-- viral_fever.jpg
-- love.jpg
-- jasmine.jpg
-- my_king.jpg
-- your_queen.jpg
-- success.jpg
-- tonsil.jpg
-- appa.jpg
-- forever.jpg
-
-## 🎨 Design Features
-
-- **Color Palette**: Romantic pinks, reds, whites, and gold
-- **Fonts**:
-  - Great Vibes (cursive titles)
-  - Dancing Script (love letters)
-  - Poppins (body text)
-- **Animations**:
-  - Floating hearts background
-  - Pulse effect on title
-  - Card hover effects with glow
-  - Line-by-line text reveal
-  - Shake animation for angry letter
-  - Confetti on photo clicks
-  - Smooth page transitions
-
-## 📱 Responsive Design
-
-The website is fully responsive and works beautifully on:
-
-- Desktop computers
-- Tablets
-- Mobile phones
-
-## 🛠️ Tech Stack
-
-- **React 18** - Frontend framework
-- **React Router 6** - Navigation
-- **Vite** - Build tool
-- **CSS3** - Styling with animations
-- **Google Fonts** - Beautiful typography
-
-## 📂 Project Structure
-
-```
-Velentines/
-├── public/
-│   └── photos/          # All your memory photos
-├── src/
-│   ├── components/
-│   │   └── HeartsBackground.jsx
-│   ├── pages/
-│   │   ├── HomePage.jsx
-│   │   ├── YesGiftsPage.jsx
-│   │   ├── NoGiftsPage.jsx
-│   │   ├── LoveLetterPage.jsx
-│   │   ├── AngryLetterPage.jsx
-│   │   ├── SongListPage.jsx
-│   │   └── PhotoGalleryPage.jsx
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── package.json
-└── vite.config.js
+export default defineConfig({
+  plugins: [react()],
+})
 ```
 
-## 🎯 Navigation Flow
+## Options
+
+### include/exclude
+
+Includes `.js`, `.jsx`, `.ts` & `.tsx` by default. This option can be used to add fast refresh to `.mdx` files:
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import mdx from '@mdx-js/rollup'
+
+export default defineConfig({
+  plugins: [
+    { enforce: 'pre', ...mdx() },
+    react({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
+  ],
+})
+```
+
+> `node_modules` are never processed by this plugin (but esbuild will)
+
+### jsxImportSource
+
+Control where the JSX factory is imported from. Default to `'react'`
+
+```js
+react({ jsxImportSource: '@emotion/react' })
+```
+
+### jsxRuntime
+
+By default, the plugin uses the [automatic JSX runtime](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html). However, if you encounter any issues, you may opt out using the `jsxRuntime` option.
+
+```js
+react({ jsxRuntime: 'classic' })
+```
+
+### babel
+
+The `babel` option lets you add plugins, presets, and [other configuration](https://babeljs.io/docs/en/options) to the Babel transformation performed on each included file.
+
+```js
+react({
+  babel: {
+    presets: [...],
+    // Your plugins run before any built-in transform (eg: Fast Refresh)
+    plugins: [...],
+    // Use .babelrc files
+    babelrc: true,
+    // Use babel.config.js files
+    configFile: true,
+  }
+})
+```
+
+Note: When not using plugins, only esbuild is used for production builds, resulting in faster builds.
+
+#### Proposed syntax
+
+If you are using ES syntax that are still in proposal status (e.g. class properties), you can selectively enable them with the `babel.parserOpts.plugins` option:
+
+```js
+react({
+  babel: {
+    parserOpts: {
+      plugins: ['decorators-legacy'],
+    },
+  },
+})
+```
+
+This option does not enable _code transformation_. That is handled by esbuild.
+
+**Note:** TypeScript syntax is handled automatically.
+
+Here's the [complete list of Babel parser plugins](https://babeljs.io/docs/en/babel-parser#ecmascript-proposalshttpsgithubcombabelproposals).
+
+### reactRefreshHost
+
+The `reactRefreshHost` option is only necessary in a module federation context. It enables HMR to work between a remote & host application. In your remote Vite config, you would add your host origin:
+
+```js
+react({ reactRefreshHost: 'http://localhost:3000' })
+```
+
+Under the hood, this simply updates the React Fash Refresh runtime URL from `/@react-refresh` to `http://localhost:3000/@react-refresh` to ensure there is only one Refresh runtime across the whole application. Note that if you define `base` option in the host application, you need to include it in the option, like: `http://localhost:3000/{base}`.
+
+## Middleware mode
+
+In [middleware mode](https://vite.dev/config/server-options.html#server-middlewaremode), you should make sure your entry `index.html` file is transformed by Vite. Here's an example for an Express server:
+
+```js
+app.get('/', async (req, res, next) => {
+  try {
+    let html = fs.readFileSync(path.resolve(root, 'index.html'), 'utf-8')
+
+    // Transform HTML using Vite plugins.
+    html = await viteServer.transformIndexHtml(req.url, html)
+
+    res.send(html)
+  } catch (e) {
+    return next(e)
+  }
+})
+```
+
+Otherwise, you'll probably get this error:
 
 ```
-Home Page
-    ├── Click YES → Yes Gifts Page
-    │                 ├── Love Letter
-    │                 ├── Song List
-    │                 └── Photo Gallery
-    │
-    └── Click NO → No Gifts Page
-                      ├── Song List
-                      └── Angry Letter → "Change to YES" → Yes Gifts Page
+Uncaught Error: @vitejs/plugin-react can't detect preamble. Something is wrong.
 ```
 
-## 💝 Special Features
+### disableOxcRecommendation
 
-1. **Floating Hearts**: Continuously animated hearts floating up the screen
-2. **Interactive Cards**: Hover effects with glow and elevation
-3. **Modal Gallery**: Click photos to view in full screen with confetti
-4. **Smooth Transitions**: All page changes are smooth and elegant
-5. **Romantic Typography**: Beautiful cursive fonts for emotional impact
-6. **Color Harmony**: Carefully selected romantic color palette
+If set, disables the recommendation to use `@vitejs/plugin-react-oxc` (which is shown when `rolldown-vite` is detected and `babel` is not configured).
 
-## 🎵 Song List
+## Consistent components exports
 
-1. Enna Sona
-2. Unakena Naan
-3. Kanave Kanave
-4. Vaseegara
-5. Kaadhal Oru Aagayam
-6. Nenjukkule
-7. Nee Kavithaigala
-8. Usure Pogudhey
-9. Vizhi Moodi
-10. Maari 2 – Rowdy Baby
+For React refresh to work correctly, your file should only export React components. You can find a good explanation in the [Gatsby docs](https://www.gatsbyjs.com/docs/reference/local-development/fast-refresh/#how-it-works).
 
-## 💌 Love Letter Content
+If an incompatible change in exports is found, the module will be invalidated and HMR will propagate. To make it easier to export simple constants alongside your component, the module is only invalidated when their value changes.
 
-The love letter includes:
-
-- "My Love,"
-- Heartfelt message about how life changed
-- Acknowledgment of challenges overcome together
-- Declaration of eternal love
-- Signature: "Yours always, Your Queen 👑"
-
-## 🔥 Angry Letter Content
-
-The angry letter includes:
-
-- Dramatic opening: "So you said NO? 😡"
-- Passionate declaration of not letting go
-- Reminder of sacrifices and love
-- Big "Change to YES" button
-
-## 🎨 Color Variables
-
-- Primary Pink: #ff69b4
-- Deep Pink: #ff1493
-- Soft Pink: #ffb6c1
-- Light Pink: #ffe4e1
-- Romantic Red: #dc143c
-- Soft Red: #ff6b6b
-- Gold: #ffd700
-
-## 📝 Commands
-
-- `npm run dev` - Start development server (already running!)
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-
-## ❤️ Made with Love
-
-This website was crafted with love and attention to detail to create a memorable Valentine's Day experience. Every animation, color, and word was chosen to express deep emotions and create a beautiful journey.
-
----
-
-**Enjoy your romantic Valentine's website! 💖**
+You can catch mistakes and get more detailed warning with this [eslint rule](https://github.com/ArnaudBarre/eslint-plugin-react-refresh).
